@@ -25,6 +25,11 @@ describe(parseData, () => {
           "LastEditedTime",
           "LastEditedBy",
           "NotInSchema",
+          "TextUndefined",
+          "NumberUndefined",
+          "CheckboxUndefined",
+          "MultiSelectUndefined",
+          "DateUndefined",
         ],
         // data
         [
@@ -45,6 +50,11 @@ describe(parseData, () => {
           "2021/09/04 15:40",
           "okita",
           "Never Seen",
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
         ],
       ],
     };
@@ -66,6 +76,11 @@ describe(parseData, () => {
         LastEditedTime: { last_edited_time: {} },
         LastEditedBy: { last_edited_by: {} },
         NotInData: { rich_text: {} },
+        TextUndefined: { rich_text: {} },
+        NumberUndefined: { number: {} },
+        CheckboxUndefined: { checkbox: {} },
+        MultiSelectUndefined: { multi_select: {} },
+        DateUndefined: { date: {} },
       },
     };
 
@@ -87,6 +102,11 @@ describe(parseData, () => {
         CreatedBy: "okitan",
         LastEditedTime: new Date(2021, 8, 4, 15, 40),
         LastEditedBy: "okita",
+        TextUndefined: "",
+        NumberUndefined: null,
+        CheckboxUndefined: false,
+        MultiSelectUndefined: [],
+        DateUndefined: null,
       },
     ]);
   });

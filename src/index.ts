@@ -14,6 +14,7 @@ export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange;
   const properties = schema.properties ?? {};
 
   const header = data.values[0];
+  // TODO: throw Error when $id / $title are included in keys
   const keyMap: { [x: string]: number | undefined } = Object.fromEntries(
     Object.keys(properties).map((key) => [key, header.findIndex((e) => e === key)])
   );
@@ -34,7 +35,7 @@ export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange;
   }));
 }
 
-function parseValue(value: any, type: string): string | number | boolean | string[] | Date {
+function parseValue(value: any, type: string): string | number | boolean | string[] | Date | null {
   switch (type) {
     case "rich_text":
     case "select":
@@ -43,18 +44,18 @@ function parseValue(value: any, type: string): string | number | boolean | strin
     case "phone_number":
     case "created_by":
     case "last_edited_by":
-      return value;
+      return value ?? "";
     case "number":
-      return parseFloat(value);
+      return value ? parseFloat(value) : null;
     case "checkbox":
       return !!value;
     case "multi_select":
     case "files":
-      return value.split(",");
+      return value ? value.split(",") : [];
     case "date":
     case "created_time":
     case "last_edited_time":
-      return new Date(Date.parse(value));
+      return value ? new Date(Date.parse(value)) : null;
     default:
       throw new Error(`unsupported type ${type}`);
   }
