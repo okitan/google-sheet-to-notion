@@ -46,7 +46,7 @@ function parseValue(value: any, type: string): string | number | boolean | strin
     case "last_edited_by":
       return value ?? "";
     case "number":
-      return value ? parseFloat(value) : null;
+      return value !== undefined ? parseFloat(value) : null;
     case "checkbox":
       return !!value;
     case "multi_select":
