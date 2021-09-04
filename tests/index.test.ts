@@ -1,8 +1,8 @@
 import { sheets_v4 } from "googleapis";
 
-import { Database, loadData } from "../src";
+import { Database, parseData } from "../src";
 
-describe(loadData, () => {
+describe(parseData, () => {
   test("works", () => {
     const data: sheets_v4.Schema$ValueRange = {
       values: [
@@ -69,7 +69,7 @@ describe(loadData, () => {
       },
     };
 
-    expect(loadData({ data, schema })).toMatchObject([
+    expect(parseData({ data, schema })).toMatchObject([
       {
         $id: "deadbeefdeadbeefdeadbeefdeadbeef",
         $title: "A title",

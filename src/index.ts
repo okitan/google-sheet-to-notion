@@ -8,7 +8,7 @@ export type Database = {
   };
 };
 
-export function loadData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }) {
+export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }) {
   if (!data.values) return [];
 
   const header = data.values[0];
