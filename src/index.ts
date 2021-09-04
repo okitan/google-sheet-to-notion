@@ -69,13 +69,14 @@ function parseValue(value: any, type: string): Value {
   switch (type) {
     case "rich_text":
     case "select":
-    case "url":
     case "email":
     case "phone_number":
     case "created_by":
     case "last_edited_by":
     case "relation":
       return value ?? "";
+    case "url": // '' is not valid for url
+      return value ? value : undefined;
     case "number":
       return value !== undefined ? parseFloat(value) : undefined;
     case "checkbox":
@@ -155,6 +156,9 @@ function buildPropertyValue(value: Value, type: string): InputPropertyValue | un
       return { type, select: { name: value } };
     case "url":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
+      // '' is not OK for url
+      if (!value) return undefined;
+
       return { type, url: value };
     case "email":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
