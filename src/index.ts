@@ -23,7 +23,7 @@ export type Datum = {
   $title: string;
   [x: string]: Value;
 };
-type Value = string | number | boolean | string[] | { start: Date; end?: Date } | Date | undefined;
+type Value = string | number | boolean | string[] | { start: string; end?: string } | undefined;
 
 export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }): Datum[] {
   if (!data.values) return [];
@@ -91,14 +91,14 @@ function parseValue(value: any, type: string): Value {
       if (value.includes("→")) {
         const [start, end] = value.split("→");
 
-        return { start: new Date(Date.parse(start)), end: new Date(Date.parse(end)) };
+        return { start: start.trim(), end: end.trim() };
       } else {
-        return { start: new Date(Date.parse(value)) };
+        return { start: value };
       }
 
     case "created_time":
     case "last_edited_time":
-      return value ? new Date(Date.parse(value)) : undefined;
+      return value ? value : undefined;
     default:
       throw new Error(`unsupported type ${type}`);
   }
@@ -193,22 +193,25 @@ function buildPropertyValue(value: Value, type: string): InputPropertyValue | un
     case "date":
       if (typeof value !== "object" || Array.isArray(value))
         throw new Error(`value should be object for ${type} but ${typeof value}`);
-      if (!("start" in value)) throw new Error(`value shold be { start: Date, end?: Date} for ${type}`);
+      if (!("start" in value)) throw new Error(`value shold be { start: string, end?: string} for ${type}`);
 
-      return { type, date: { start: value.start.toISOString(), end: value.end?.toISOString() } };
+      return { type, date: { start: toISOString(value.start), end: value.end ? toISOString(value.end) : undefined } };
     case "created_time":
-      if (typeof value !== "object" || Array.isArray(value))
-        throw new Error(`value should be object for ${type} but ${typeof value}`);
-      if ("start" in value) throw new Error(`value shold not be { start: Date, end?: Date} for ${type}`);
-
-      return { type, created_time: value.toISOString() };
+      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
+      return { type, created_time: toISOString(value) };
     case "last_edited_time":
-      if (typeof value !== "object" || Array.isArray(value))
-        throw new Error(`value should be object for ${type} but ${typeof value}`);
-      if ("start" in value) throw new Error(`value shold not be { start: Date, end?: Date} for ${type}`);
-
-      return { type, last_edited_time: value.toISOString() };
+      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
+      return { type, last_edited_time: toISOString(value) };
     default:
       throw new Error(`unsupported type ${type}`);
+  }
+}
+
+function toISOString(str: string) {
+  if (str.includes(":")) {
+    return new Date(Date.parse(str) + 9 * 60 * 60 * 1000).toISOString().replace("Z", "+09:00");
+  } else {
+    const date = new Date(Date.parse(str));
+    return new Date(Date.parse(str) + 9 * 60 * 60 * 1000).toISOString().split("T")[0];
   }
 }

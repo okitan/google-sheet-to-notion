@@ -101,14 +101,14 @@ Array [
     "Checkbox": true,
     "CheckboxUndefined": false,
     "CreatedBy": "okitan",
-    "CreatedTime": 2021-09-04T06:35:00.000Z,
+    "CreatedTime": "2021/09/04 15:35",
     "Date": Object {
-      "start": 2021-09-03T15:00:00.000Z,
+      "start": "2021/09/04",
     },
     "DateUndefined": undefined,
     "DateWithEnd": Object {
-      "end": 2015-01-15T15:00:00.000Z,
-      "start": 2015-01-09T15:00:00.000Z,
+      "end": "2015/01/16",
+      "start": "2015/01/10",
     },
     "Email": "no-reply@exmple.com",
     "Files": Array [
@@ -116,7 +116,7 @@ Array [
       "https://example.com/",
     ],
     "LastEditedBy": "okita",
-    "LastEditedTime": 2021-09-04T06:40:00.000Z,
+    "LastEditedTime": "2021/09/04 15:40",
     "MultiSelect": Array [
       "SelectA",
       "SelectB",
@@ -171,16 +171,16 @@ describe(buildPageParameters, () => {
       Number: 0,
       Select: "A select",
       MultiSelect: ["SelectA", "SelectB"],
-      Date: { start: new Date(2021, 8, 4) },
-      DateWithEnd: { start: new Date(2021, 8, 4), end: new Date(2021, 8, 5) },
+      Date: { start: "2021/09/04" },
+      DateWithEnd: { start: "2021/09/04", end: "2021/09/05" },
       Files: ["http://example.com/", "https://example.com/"],
       Checkbox: true,
       Url: "https://example.com/",
       Email: "no-reply@exmple.com",
       PhoneNumber: "06-6012-3456",
-      CreatedTime: new Date(2021, 8, 4, 15, 35),
+      CreatedTime: "2021/09/04 15:35:00",
       CreatedBy: "okitan",
-      LastEditedTime: new Date(2021, 8, 4, 15, 40),
+      LastEditedTime: "2021/09/05 15:35:00",
       LastEditedBy: "okita",
       TextUndefined: "",
       NumberUndefined: null,
@@ -217,13 +217,13 @@ Object {
       "type": "created_by",
     },
     "CreatedTime": Object {
-      "created_time": "2021-09-04T06:35:00.000Z",
+      "created_time": "2021-09-04T15:35:00.000+09:00",
       "type": "created_time",
     },
     "Date": Object {
       "date": Object {
         "end": undefined,
-        "start": "2021-09-03T15:00:00.000Z",
+        "start": "2021-09-04",
       },
       "type": "date",
     },
@@ -258,7 +258,7 @@ Object {
       "type": "last_edited_by",
     },
     "LastEditedTime": Object {
-      "last_edited_time": "2021-09-04T06:40:00.000Z",
+      "last_edited_time": "2021-09-05T15:35:00.000+09:00",
       "type": "last_edited_time",
     },
     "MultiSelect": Object {
