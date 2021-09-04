@@ -8,8 +8,6 @@ export type Database = {
   };
 };
 
-// "rich_text", "number", "select", "multi_select", "date", "formula", "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time", "created_by", "last_edited_time", and "last_edited_by".
-
 export function loadData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }) {
   if (!data.values) return [];
 
@@ -18,7 +16,6 @@ export function loadData({ data, schema }: { data: sheets_v4.Schema$ValueRange; 
     Object.keys(schema.properties).map((key) => [key, header.findIndex((e) => e === key)])
   );
 
-  //
   return data.values.slice(1).map((array) => ({
     $id: array[0],
     $title: array[1],
@@ -31,8 +28,6 @@ export function loadData({ data, schema }: { data: sheets_v4.Schema$ValueRange; 
       })
     ),
   }));
-
-  // const properties = Object.fromEntries(Object.entries(schema.properties).map(([a, b]) => [a, b]));
 }
 
 function parseValue(value: any, type: string): string | number | boolean | string[] | Date {
