@@ -126,7 +126,6 @@ Array [
     "Text": "A text",
     "TextUndefined": "",
     "Url": "https://example.com/",
-    "undefined": undefined,
   },
 ]
 `);
