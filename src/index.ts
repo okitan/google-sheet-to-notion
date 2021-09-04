@@ -1,26 +1,30 @@
-import { Property, PropertySchema } from "@notionhq/client/build/src/api-types";
+import { Property, PropertySchema, UpdatePropertySchema } from "@notionhq/client/build/src/api-types";
 import { sheets_v4 } from "googleapis";
 
 export type Database = {
-  [x: string]: unknown;
-  properties: {
-    [propertyName: string]: Property | PropertySchema;
+  properties?: {
+    // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
+    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | null;
   };
 };
 
 export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }) {
   if (!data.values) return [];
 
+  const properties = schema.properties ?? {};
+
   const header = data.values[0];
   const keyMap: { [x: string]: number | undefined } = Object.fromEntries(
-    Object.keys(schema.properties).map((key) => [key, header.findIndex((e) => e === key)])
+    Object.keys(properties).map((key) => [key, header.findIndex((e) => e === key)])
   );
 
   return data.values.slice(1).map((array) => ({
     $id: array[0],
     $title: array[1],
     ...Object.fromEntries(
-      Object.entries(schema.properties).map(([key, property]) => {
+      Object.entries(properties).map(([key, property]) => {
+        if (property === null || property === undefined) return [];
+
         const index = keyMap[key];
         const value = typeof index === "undefined" ? null : parseValue(array[index], Object.keys(property)[0]);
 
