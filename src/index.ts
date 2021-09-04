@@ -42,19 +42,25 @@ export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange;
   return data.values.slice(1).map((array) => ({
     // metadata
     ...Object.fromEntries(
-      metadata.map((key) => {
-        const index = keyMap[key];
-        return index >= 0 ? [key, array[index]] : [];
-      })
+      metadata
+        .map((key) => {
+          const index = keyMap[key];
+          return index >= 0 ? [key, array[index]] : [];
+        })
+        .filter((e) => e.length)
     ),
     // properties including title
     ...Object.fromEntries(
-      Object.entries(properties).map(([key, property]) => {
-        if (property === null || property === undefined) return [];
+      Object.entries(properties)
+        .map(([key, property]) => {
+          if (property === null || property === undefined) return [];
 
-        const index = keyMap[key];
-        return index >= 0 ? [key, parseValue(array[index], Object.keys(property)[0])] : [];
-      })
+          const type = "type" in property ? property.type : Object.keys(property)[0];
+
+          const index = keyMap[key];
+          return index >= 0 ? [key, parseValue(array[index], type)] : [];
+        })
+        .filter((e) => e.length)
     ),
   }));
 }
@@ -127,7 +133,9 @@ export function buildPageParameters({
     const property = properties[key];
     if (!property) return;
 
-    parameter.properties[key] = buildProperty(value, Object.keys(property)[0]);
+    const type = "type" in property ? property.type : Object.keys(property)[0];
+
+    parameter.properties[key] = buildProperty(value, type);
   });
   return parameter;
 }
