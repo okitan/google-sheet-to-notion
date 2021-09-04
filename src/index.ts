@@ -8,26 +8,49 @@ export type Database = {
   };
 };
 
-export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }) {
+export type Data = Array<{
+  $id: string | null;
+  $icon: string | null;
+  $cover: string | null;
+  title: string;
+  [x: string]: Value;
+}>;
+
+type Value = string | number | boolean | string[] | Date | null;
+
+export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }): Data {
   if (!data.values) return [];
 
-  const properties = schema.properties ?? {};
+  const properties: {
+    // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
+    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | null;
+    title: { rich_text: {} };
+  } = schema.properties ? { ...schema.properties, title: { rich_text: {} } } : { title: { rich_text: {} } };
 
   const header = data.values[0];
   // TODO: throw Error when $id / $title are included in keys
-  const keyMap: { [x: string]: number | undefined } = Object.fromEntries(
-    Object.keys(properties).map((key) => [key, header.findIndex((e) => e === key)])
+  const keyMap: { [x: string]: number } = Object.fromEntries(
+    ["$id", "$icon", "$cover", ...Object.keys(properties)].map((key) => [key, header.findIndex((e) => e === key)])
   );
+  if (!keyMap.title) throw new Error("you should at least specify $title");
 
   return data.values.slice(1).map((array) => ({
-    $id: array[0],
-    $title: array[1],
+    // metadata
+    ...Object.fromEntries(
+      ["$id", "$icon", "$cover"].map((key) => {
+        const index = keyMap[key];
+        const value = index < 0 ? null : array[index];
+
+        return [key, value];
+      })
+    ),
+    // properties including title
     ...Object.fromEntries(
       Object.entries(properties).map(([key, property]) => {
         if (property === null || property === undefined) return [];
 
         const index = keyMap[key];
-        const value = typeof index === "undefined" ? null : parseValue(array[index], Object.keys(property)[0]);
+        const value = index < 0 ? null : parseValue(array[index], Object.keys(property)[0]);
 
         return [key, value];
       })
@@ -35,7 +58,7 @@ export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange;
   }));
 }
 
-function parseValue(value: any, type: string): string | number | boolean | string[] | Date | null {
+function parseValue(value: any, type: string): Value {
   switch (type) {
     case "rich_text":
     case "select":

@@ -9,7 +9,8 @@ describe(parseData, () => {
         // header
         [
           "$id",
-          "TitleName",
+          "title",
+          "$icon",
           "Text",
           "Number",
           "Select",
@@ -35,6 +36,7 @@ describe(parseData, () => {
         [
           "deadbeefdeadbeefdeadbeefdeadbeef",
           "A title",
+          "https://example.com/icon.png",
           "A text",
           0,
           "A select",
@@ -87,7 +89,8 @@ describe(parseData, () => {
     expect(parseData({ data, schema })).toMatchObject([
       {
         $id: "deadbeefdeadbeefdeadbeefdeadbeef",
-        $title: "A title",
+        title: "A title",
+        $icon: "https://example.com/icon.png",
         Text: "A text",
         Number: 0,
         Select: "A select",
