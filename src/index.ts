@@ -3,6 +3,7 @@ import {
   InputPropertyValue,
   Property,
   PropertySchema,
+  RelationProperty,
   UpdatePropertySchema,
 } from "@notionhq/client/build/src/api-types";
 import { sheets_v4 } from "googleapis";
@@ -10,7 +11,7 @@ import { sheets_v4 } from "googleapis";
 export type Database = {
   properties?: {
     // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
-    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | null;
+    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | RelationProperty | null;
   };
 };
 
@@ -73,7 +74,6 @@ function parseValue(value: any, type: string): Value {
     case "phone_number":
     case "created_by":
     case "last_edited_by":
-    case "relation":
       return value ?? "";
     case "url": // '' is not valid for url
       return value ? value : undefined;
@@ -83,6 +83,7 @@ function parseValue(value: any, type: string): Value {
       return !!value;
     case "multi_select":
     case "files":
+    case "relation":
       return value ? value.split(",") : [];
     case "date":
       if (!value) return undefined;
@@ -181,6 +182,10 @@ function buildPropertyValue(value: Value, type: string): InputPropertyValue | un
     case "multi_select":
       if (!Array.isArray(value)) throw new Error(`value should be arary for ${type} but ${typeof value}`);
       return { type, multi_select: value.map((e) => ({ name: e })) };
+    case "relation":
+      if (!Array.isArray(value)) throw new Error(`value should be arary for ${type} but ${typeof value}`);
+      // @ts-ignore
+      return { type, relation: value.map((e) => ({ id: e })) };
     case "files":
       if (!Array.isArray(value)) throw new Error(`value should be arary for ${type} but ${typeof value}`);
       // FIXME: name

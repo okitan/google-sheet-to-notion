@@ -32,6 +32,7 @@ describe(parseData, () => {
           "CheckboxUndefined",
           "MultiSelectUndefined",
           "DateUndefined",
+          "Relation",
         ],
         // data
         [
@@ -59,6 +60,7 @@ describe(parseData, () => {
           undefined,
           undefined,
           undefined,
+          "A,B",
         ],
       ],
     };
@@ -86,6 +88,7 @@ describe(parseData, () => {
         CheckboxUndefined: { checkbox: {} },
         MultiSelectUndefined: { multi_select: {} },
         DateUndefined: { date: {} },
+        Relation: { id: "hoge", name: "fuga", type: "relation", relation: { database_id: "ugu" } },
       },
     };
 
@@ -122,6 +125,10 @@ Array [
     "Number": 0,
     "NumberUndefined": undefined,
     "PhoneNumber": "06-6012-3456",
+    "Relation": Array [
+      "A",
+      "B",
+    ],
     "Select": "A select",
     "Text": "A text",
     "TextUndefined": "",
@@ -151,6 +158,7 @@ describe(buildPageParameters, () => {
         LastEditedTime: { last_edited_time: {} },
         LastEditedBy: { last_edited_by: {} },
         NotInData: { rich_text: {} },
+        Relation: { id: "hoge", name: "fuga", type: "relation", relation: { database_id: "ugu" } },
       },
     };
 
@@ -179,6 +187,7 @@ describe(buildPageParameters, () => {
       CheckboxUndefined: false,
       MultiSelectUndefined: [],
       DateUndefined: null,
+      Relation: ["A", "B"],
     };
 
     expect(buildPageParameters({ data, schema })).toMatchInlineSnapshot(`
@@ -270,6 +279,17 @@ Object {
     "PhoneNumber": Object {
       "phone_number": "06-6012-3456",
       "type": "phone_number",
+    },
+    "Relation": Object {
+      "relation": Array [
+        Object {
+          "id": "A",
+        },
+        Object {
+          "id": "B",
+        },
+      ],
+      "type": "relation",
     },
     "Select": Object {
       "select": Object {
