@@ -1,0 +1,29 @@
+{
+  "name": "@okitan/google-sheet-to-notion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "rm -rf lib && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okitan/google-sheet-to-notion.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/okitan/google-sheet-to-notion/issues"
+  },
+  "homepage": "https://github.com/okitan/google-sheet-to-notion#readme",
+  "dependencies": {
+    "@notionhq/client": "^0.3.1",
+    "googleapis": "^85.0.0"
+  },
+  "devDependencies": {
+    "prettier": "2.3.2",
+    "typescript": "4.4.2"
+  }
+}
