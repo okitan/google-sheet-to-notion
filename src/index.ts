@@ -74,6 +74,7 @@ function parseValue(value: any, type: string): Value {
     case "phone_number":
     case "created_by":
     case "last_edited_by":
+    case "relation":
       return value ?? "";
     case "number":
       return value !== undefined ? parseFloat(value) : undefined;
@@ -135,12 +136,15 @@ export function buildPageParameters({
 
     const type = "type" in property ? property.type : Object.keys(property)[0];
 
-    parameter.properties[key] = buildProperty(value, type);
+    const propertyValue = buildPropertyValue(value, type);
+    if (propertyValue !== undefined) parameter.properties[key] = propertyValue;
   });
   return parameter;
 }
 
-function buildProperty(value: Value, type: string): InputPropertyValue {
+function buildPropertyValue(value: Value, type: string): InputPropertyValue | undefined {
+  if (value === undefined) return undefined;
+
   // const property: InputPropertyValue = {};
   switch (type) {
     case "rich_text":
