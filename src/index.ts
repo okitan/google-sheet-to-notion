@@ -15,6 +15,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export type Database = {
+  id?: string;
   properties?: {
     // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
     [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | RelationProperty | null;
@@ -117,8 +118,7 @@ export function buildPageParameters({
   data: Datum & { $databaseParent?: string; $pageParent?: string };
   schema: Database;
 }): PagesCreateParameters | PagesUpdateParameters {
-  if (!data.$id && !data.$databaseParent && !data.$pageParent)
-    throw new Error("either $id or $databaseParent or $pageParent is needed");
+  if (!data.$id && !schema.id) throw new Error("You should assign data.$id or shcema.id");
 
   const title = {
     type: "title",
@@ -127,9 +127,7 @@ export function buildPageParameters({
 
   const parameter = data.$id
     ? ({ page_id: data.$id, archived: false, properties: { title } } as PagesUpdateParameters)
-    : data.$databaseParent
-    ? ({ parent: { database_id: data.$databaseParent }, properties: { title } } as PagesCreateParameters)
-    : ({ parent: { page_id: data.$pageParnet }, properties: { title } } as PagesCreateParameters);
+    : ({ parent: { database_id: schema.id }, properties: { title } } as PagesCreateParameters);
 
   if ("$icon" in data && data.$icon) parameter.icon = { type: "emoji", emoji: data.$icon };
   if ("$cover" in data && data.$cover) parameter.cover = { type: "external", external: { url: data.$cover } };
