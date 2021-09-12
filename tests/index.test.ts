@@ -217,7 +217,7 @@ Object {
       "type": "created_by",
     },
     "CreatedTime": Object {
-      "created_time": "2021-09-04T15:35:00.000+09:00",
+      "created_time": "2021-09-04T15:35:00+09:00",
       "type": "created_time",
     },
     "Date": Object {
@@ -258,7 +258,7 @@ Object {
       "type": "last_edited_by",
     },
     "LastEditedTime": Object {
-      "last_edited_time": "2021-09-05T15:35:00.000+09:00",
+      "last_edited_time": "2021-09-05T15:35:00+09:00",
       "type": "last_edited_time",
     },
     "MultiSelect": Object {

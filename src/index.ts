@@ -6,7 +6,13 @@ import {
   RelationProperty,
   UpdatePropertySchema,
 } from "@notionhq/client/build/src/api-types";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { sheets_v4 } from "googleapis";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export type Database = {
   properties?: {
@@ -209,9 +215,8 @@ function buildPropertyValue(value: Value, type: string): InputPropertyValue | un
 
 function toISOString(str: string) {
   if (str.includes(":")) {
-    return new Date(Date.parse(str) + 9 * 60 * 60 * 1000).toISOString().replace("Z", "+09:00");
+    return dayjs(str).tz(dayjs.tz.guess()).format("YYYY-MM-DDTHH:mm:ssZ");
   } else {
-    const date = new Date(Date.parse(str));
-    return new Date(Date.parse(str) + 9 * 60 * 60 * 1000).toISOString().split("T")[0];
+    return dayjs(str).tz(dayjs.tz.guess()).format("YYYY-MM-DD");
   }
 }
