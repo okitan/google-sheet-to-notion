@@ -33,6 +33,7 @@ jobs:
       - run: npm ci
       - run: pwd
       - run: ls -la
+      - run: npm test -- --testLocationInResults --json --coverage  --outputFile=/home/runner/work/google-sheet-to-notion/google-sheet-to-notion/jest.results.json
       - name: test
         uses: mattallty/jest-github-action@master
         env:
