@@ -35,4 +35,3 @@ jobs:
         uses: mattallty/jest-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTIONS_RUNNER_DEBUG: true
