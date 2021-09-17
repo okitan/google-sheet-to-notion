@@ -80,12 +80,15 @@ export function parseData({
 
           if (validate) {
             if (type === "select" && "select" in property) {
-              const found = property.select.options?.find((e) => e.name === value);
+              if (value) {
+                const found = property.select.options?.find((e) => e.name === value);
 
-              if (!found) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
+                if (!found) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
+              }
             } else if (type === "multi_select" && "multi_select" in property) {
               if (property.multi_select.options) {
                 if (!Array.isArray(value)) throw new Error("something weired");
+
                 const found = property.multi_select.options.filter((e) => value.includes(e.name || ""));
 
                 if (value.length !== found.length)
@@ -119,7 +122,12 @@ function parseValue(value: any, type: string): Value {
     case "multi_select":
     case "files":
     case "relation":
-      return value ? value.split(",") : [];
+      return value
+        ? value
+            .split(",")
+            .map((e: string) => e.trim())
+            .filter((e: string) => e)
+        : [];
     case "date":
       if (!value) return undefined;
 
