@@ -32,7 +32,15 @@ export type Datum = {
 };
 type Value = string | number | boolean | string[] | { start: string; end?: string } | undefined;
 
-export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange; schema: Database }): Datum[] {
+export function parseData({
+  data,
+  schema,
+  validate = false,
+}: {
+  data: sheets_v4.Schema$ValueRange;
+  schema: Database;
+  validate?: boolean;
+}): Datum[] {
   if (!data.values) return [];
 
   const properties: {
@@ -66,7 +74,27 @@ export function parseData({ data, schema }: { data: sheets_v4.Schema$ValueRange;
           const type = "type" in property ? property.type : Object.keys(property)[0];
 
           const index = keyMap[key];
-          return index >= 0 ? [key, parseValue(array[index], type)] : [];
+          if (index < 0) return [];
+
+          const value = parseValue(array[index], type);
+
+          if (validate) {
+            if (type === "select" && "select" in property) {
+              const found = property.select.options?.find((e) => e.name === value);
+
+              if (!found) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
+            } else if (type === "multi_select" && "multi_select" in property) {
+              if (property.multi_select.options) {
+                if (!Array.isArray(value)) throw new Error("something weired");
+                const found = property.multi_select.options.filter((e) => value.includes(e.name || ""));
+
+                if (value.length !== found.length)
+                  throw new Error(`Validation Error: ${value} is not allowed for ${key}`);
+              }
+            }
+          }
+
+          return [key, value];
         })
         .filter((e) => e.length)
     ),
