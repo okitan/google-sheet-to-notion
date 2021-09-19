@@ -3,7 +3,6 @@ import {
   InputPropertyValue,
   Property,
   PropertySchema,
-  RelationProperty,
   UpdatePropertySchema,
 } from "@notionhq/client/build/src/api-types";
 import dayjs from "dayjs";
@@ -18,7 +17,7 @@ export type Database = {
   id?: string;
   properties?: {
     // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
-    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | RelationProperty | null;
+    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | null;
   };
 };
 
