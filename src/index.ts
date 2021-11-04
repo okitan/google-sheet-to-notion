@@ -233,6 +233,11 @@ function buildPropertyValue(value: Value, type: string) {
       if (!("start" in value)) throw new Error(`value shold be { start: string, end?: string} for ${type}`);
 
       return { type, date: { start: toISOString(value.start), end: value.end ? toISOString(value.end) : undefined } };
+    case "created_time":
+    case "created_by":
+    case "last_edited_time":
+    case "last_edited_by":
+      return;
     default:
       throw new Error(`unsupported type ${type}`);
   }
