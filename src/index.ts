@@ -13,12 +13,11 @@ import { sheets_v4 } from "googleapis";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const metadata = ["$title", "$id", "$icon", "$cover"] as const;
+const metadata = ["$id", "$icon", "$cover"] as const;
 export type Datum = {
   $id?: string;
   $icon?: string;
   $cover?: string;
-  $title: string;
   [x: string]: Value;
 };
 type Value = string | number | boolean | string[] | { start: string; end?: string } | undefined | null;
@@ -41,7 +40,6 @@ export function parseData({
   const keyMap: { [x: string]: number } = Object.fromEntries(
     [...metadata, ...Object.keys(properties)].map((key) => [key, header.findIndex((e) => e === key)])
   );
-  if (keyMap.$title < 0) throw new Error("you should at least specify $title");
 
   return data.values.slice(1).map((array) => ({
     // metadata
@@ -97,6 +95,7 @@ export function parseData({
 
 function parseValue(value: any, type: string): Value {
   switch (type) {
+    case "title":
     case "rich_text":
     case "select":
     case "email":
@@ -138,9 +137,6 @@ function parseValue(value: any, type: string): Value {
   }
 }
 
-const parameter: CreatePageParameters | UpdatePageParameters = { page_id: "xxx" };
-if (parameter.properties) parameter.properties["hoge"] = { type: "title", title: [] };
-
 export function buildPageParameters({
   data,
   schema,
@@ -149,11 +145,6 @@ export function buildPageParameters({
   schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
 }): CreatePageParameters | UpdatePageParameters {
   if (!data.$id && !("id" in schema)) throw new Error("You should assign data.$id or shcema.id");
-
-  const title = {
-    type: "title" as const,
-    title: [{ type: "text" as const, text: { content: data.$title } }],
-  };
 
   const parameter: CreatePageParameters | UpdatePageParameters = data.$id
     ? ({ page_id: data.$id, archived: false } as UpdatePageParameters)
@@ -175,16 +166,15 @@ export function buildPageParameters({
   const properties = schema.properties || {};
 
   parameter.properties = Object.fromEntries([
-    ["title", title],
     ...Object.entries(data)
       .map(([key, value]) => {
         if (key.startsWith("$")) return [];
         const property = properties[key];
         if (!property) return [];
 
-        const type = "type" in property ? property.type : Object.keys(property)[0];
+        // title may be lacks type
+        const type = "type" in property ? property.type ?? "title" : Object.keys(property)[0];
 
-        // when type is undefined is title
         const propertyValue = buildPropertyValue(value, type);
 
         return propertyValue ? [key, propertyValue] : [];
@@ -195,10 +185,9 @@ export function buildPageParameters({
   return parameter;
 }
 
-function buildPropertyValue(value: Value, type?: string) {
+function buildPropertyValue(value: Value, type: string) {
   if (typeof value === "undefined" || value === null) return undefined;
 
-  // const property: InputPropertyValue = {};
   switch (type) {
     case "title":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);

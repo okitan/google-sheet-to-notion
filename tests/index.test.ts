@@ -10,7 +10,7 @@ describe(parseData, () => {
         // header
         [
           "$id",
-          "$title",
+          "Title",
           "$cover",
           "Text",
           "Number",
@@ -38,7 +38,7 @@ describe(parseData, () => {
         // data
         [
           "deadbeefdeadbeefdeadbeefdeadbeef",
-          "A title",
+          "A Title",
           "https://example.com/cover.png",
           "A text",
           0,
@@ -69,6 +69,7 @@ describe(parseData, () => {
     const schema: CreateDatabaseParameters = {
       parent: { page_id: "xxx" },
       properties: {
+        Title: { title: {} },
         Text: { rich_text: {} },
         Number: { number: {} },
         Select: { select: {} },
@@ -99,7 +100,6 @@ describe(parseData, () => {
         Object {
           "$cover": "https://example.com/cover.png",
           "$id": "deadbeefdeadbeefdeadbeefdeadbeef",
-          "$title": "A title",
           "Checkbox": true,
           "CheckboxUndefined": false,
           "CreatedBy": "okitan",
@@ -134,6 +134,7 @@ describe(parseData, () => {
           "Select": "A select",
           "Text": "A text",
           "TextUndefined": "",
+          "Title": "A Title",
           "Url": "https://example.com/",
         },
       ]
@@ -146,6 +147,7 @@ describe(buildPageParameters, () => {
     const schema: UpdateDatabaseParameters = {
       database_id: "xxx",
       properties: {
+        Title: { title: {} },
         Text: { rich_text: {} },
         Number: { number: {} },
         Select: { select: {} },
@@ -169,7 +171,7 @@ describe(buildPageParameters, () => {
       $id: "deadbeefdeadbeefdeadbeefdeadbeef",
       $icon: "😀",
       $cover: "https://example.com/icon.png",
-      $title: "A title",
+      Title: "A title",
       Text: "A text",
       Number: 0,
       Select: "A select",
@@ -285,11 +287,7 @@ describe(buildPageParameters, () => {
             ],
             "type": "rich_text",
           },
-          "Url": Object {
-            "type": "url",
-            "url": "https://example.com/",
-          },
-          "title": Object {
+          "Title": Object {
             "title": Array [
               Object {
                 "text": Object {
@@ -299,6 +297,10 @@ describe(buildPageParameters, () => {
               },
             ],
             "type": "title",
+          },
+          "Url": Object {
+            "type": "url",
+            "url": "https://example.com/",
           },
         },
       }
