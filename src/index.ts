@@ -75,7 +75,7 @@ export function parseData({
           if (validate) {
             if (type === "select" && "select" in property) {
               if (value) {
-                const found = property.select.options?.find((e: any) => e.name === value);
+                const found = property.select.options?.find((e) => e.name === value);
 
                 if (!found) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
               }
@@ -83,7 +83,7 @@ export function parseData({
               if (property.multi_select.options) {
                 if (!Array.isArray(value)) throw new Error("something weired");
 
-                const found = property.multi_select.options.filter((e: any) => value.includes(e.name || ""));
+                const found = property.multi_select.options.filter((e) => value.includes(e.name || ""));
 
                 if (value.length !== found.length)
                   throw new Error(`Validation Error: ${value} is not allowed for ${key}`);
