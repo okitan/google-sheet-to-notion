@@ -13,7 +13,7 @@ import { sheets_v4 } from "googleapis";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const metadata = ["$id", "$icon", "$cover"] as const;
+const metadata = ["$title", "$id", "$icon", "$cover"] as const;
 export type Datum = {
   $id?: string;
   $icon?: string;
@@ -38,12 +38,10 @@ export function parseData({
 
   const header = data.values[0];
 
-  const titleIndex = header.findIndex((e) => e === "$title");
-  if (titleIndex < 0) throw new Error("you should at least specify $title");
-
   const keyMap: { [x: string]: number } = Object.fromEntries(
     [...metadata, ...Object.keys(properties)].map((key) => [key, header.findIndex((e) => e === key)])
   );
+  if (keyMap.$title < 0) throw new Error("you should at least specify $title");
 
   return data.values.slice(1).map((array) => ({
     // metadata
@@ -57,7 +55,6 @@ export function parseData({
     ),
     // properties including title
     ...Object.fromEntries([
-      ["$title", parseValue(array[titleIndex], "rich_text")],
       ...Object.keys(properties)
         .map((key) => {
           // Because properties is Record<string, ...>, Object.values is typed as any
