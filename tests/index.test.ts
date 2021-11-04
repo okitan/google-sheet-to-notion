@@ -38,7 +38,7 @@ describe(parseData, () => {
         // data
         [
           "deadbeefdeadbeefdeadbeefdeadbeef",
-          "A Title",
+          "A title",
           "https://example.com/cover.png",
           "A text",
           0,
@@ -134,7 +134,7 @@ describe(parseData, () => {
           "Select": "A select",
           "Text": "A text",
           "TextUndefined": "",
-          "Title": "A Title",
+          "Title": "A title",
           "Url": "https://example.com/",
         },
       ]
