@@ -61,13 +61,13 @@ export function parseData({
           const property = properties[key];
           if (property === null || property === undefined) return [];
 
-          const type = "type" in property ? property.type : Object.keys(property)[0];
+          // properyt.type can be undefined when type is title
+          const type = "type" in property ? property.type ?? "rich_text" : Object.keys(property)[0];
 
           const index = keyMap[key];
           if (index < 0) return [];
 
-          // properyt.type can be undefined when type is title
-          const value = parseValue(array[index], type || "rich_text");
+          const value = parseValue(array[index], type);
 
           if (validate) {
             if (type === "select" && "select" in property) {
