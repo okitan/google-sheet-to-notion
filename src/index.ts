@@ -1,14 +1,15 @@
-import {
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { sheets_v4 } from "googleapis";
+
+import type {
   CreateDatabaseParameters,
   CreatePageParameters,
   GetDatabaseResponse,
   UpdateDatabaseParameters,
   UpdatePageParameters,
 } from "@notionhq/client/build/src/api-endpoints";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-import { sheets_v4 } from "googleapis";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -141,7 +142,7 @@ export function buildPageParameters({
   data,
   schema,
 }: {
-  data: Datum & { $databaseParent?: string; $pageParent?: string };
+  data: Datum;
   schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
 }): CreatePageParameters | UpdatePageParameters {
   const parameter: CreatePageParameters | UpdatePageParameters = data.$id

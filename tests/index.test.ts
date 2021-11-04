@@ -1,7 +1,8 @@
-import { CreateDatabaseParameters, UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
 import { sheets_v4 } from "googleapis";
 
 import { buildPageParameters, Datum, parseData } from "../src";
+
+import type { CreateDatabaseParameters, UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
 
 describe(parseData, () => {
   test("works", () => {
