@@ -52,8 +52,8 @@ export function parseData({
         .filter((e) => e.length)
     ),
     // properties including title
-    ...Object.fromEntries([
-      ...Object.keys(properties)
+    ...Object.fromEntries(
+      Object.keys(properties)
         .map((key) => {
           // Because properties is Record<string, ...>, Object.values is typed as any
           const property = properties[key];
@@ -88,8 +88,8 @@ export function parseData({
 
           return [key, value];
         })
-        .filter((e) => e.length),
-    ]),
+        .filter((e) => e.length)
+    ),
   }));
 }
 
@@ -165,8 +165,8 @@ export function buildPageParameters({
 
   const properties = schema.properties || {};
 
-  parameter.properties = Object.fromEntries([
-    ...Object.entries(data)
+  parameter.properties = Object.fromEntries(
+    Object.entries(data)
       .map(([key, value]) => {
         if (key.startsWith("$")) return [];
         const property = properties[key];
@@ -179,8 +179,8 @@ export function buildPageParameters({
 
         return propertyValue ? [key, propertyValue] : [];
       })
-      .filter((e) => e.length),
-  ]);
+      .filter((e) => e.length)
+  );
 
   return parameter;
 }
