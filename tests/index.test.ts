@@ -1,6 +1,8 @@
 import { sheets_v4 } from "googleapis";
 
-import { buildPageParameters, Database, Datum, parseData } from "../src";
+import { buildPageParameters, Datum, parseData } from "../src";
+
+import type { CreateDatabaseParameters, UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
 
 describe(parseData, () => {
   test("works", () => {
@@ -9,7 +11,7 @@ describe(parseData, () => {
         // header
         [
           "$id",
-          "$title",
+          "Title",
           "$cover",
           "Text",
           "Number",
@@ -65,8 +67,10 @@ describe(parseData, () => {
       ],
     };
 
-    const schema: Database = {
+    const schema: CreateDatabaseParameters = {
+      parent: { page_id: "xxx" },
       properties: {
+        Title: { title: {} },
         Text: { rich_text: {} },
         Number: { number: {} },
         Select: { select: {} },
@@ -88,61 +92,63 @@ describe(parseData, () => {
         CheckboxUndefined: { checkbox: {} },
         MultiSelectUndefined: { multi_select: {} },
         DateUndefined: { date: {} },
-        Relation: { id: "hoge", name: "fuga", type: "relation", relation: { database_id: "ugu" } },
+        Relation: { type: "relation", relation: { database_id: "ugu" } },
       },
     };
 
     expect(parseData({ data, schema })).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "$cover": "https://example.com/cover.png",
-    "$id": "deadbeefdeadbeefdeadbeefdeadbeef",
-    "$title": "A title",
-    "Checkbox": true,
-    "CheckboxUndefined": false,
-    "CreatedBy": "okitan",
-    "CreatedTime": "2021/09/04 15:35",
-    "Date": Object {
-      "start": "2021/09/04",
-    },
-    "DateUndefined": undefined,
-    "DateWithEnd": Object {
-      "end": "2015/01/16",
-      "start": "2015/01/10",
-    },
-    "Email": "no-reply@exmple.com",
-    "Files": Array [
-      "http://example.com/",
-      "https://example.com/",
-    ],
-    "LastEditedBy": "okita",
-    "LastEditedTime": "2021/09/04 15:40",
-    "MultiSelect": Array [
-      "SelectA",
-      "SelectB",
-    ],
-    "MultiSelectUndefined": Array [],
-    "Number": 0,
-    "NumberUndefined": undefined,
-    "PhoneNumber": "06-6012-3456",
-    "Relation": Array [
-      "A",
-      "B",
-    ],
-    "Select": "A select",
-    "Text": "A text",
-    "TextUndefined": "",
-    "Url": "https://example.com/",
-  },
-]
-`);
+      Array [
+        Object {
+          "$cover": "https://example.com/cover.png",
+          "$id": "deadbeefdeadbeefdeadbeefdeadbeef",
+          "Checkbox": true,
+          "CheckboxUndefined": false,
+          "CreatedBy": "okitan",
+          "CreatedTime": "2021/09/04 15:35",
+          "Date": Object {
+            "start": "2021/09/04",
+          },
+          "DateUndefined": undefined,
+          "DateWithEnd": Object {
+            "end": "2015/01/16",
+            "start": "2015/01/10",
+          },
+          "Email": "no-reply@exmple.com",
+          "Files": Array [
+            "http://example.com/",
+            "https://example.com/",
+          ],
+          "LastEditedBy": "okita",
+          "LastEditedTime": "2021/09/04 15:40",
+          "MultiSelect": Array [
+            "SelectA",
+            "SelectB",
+          ],
+          "MultiSelectUndefined": Array [],
+          "Number": 0,
+          "NumberUndefined": undefined,
+          "PhoneNumber": "06-6012-3456",
+          "Relation": Array [
+            "A",
+            "B",
+          ],
+          "Select": "A select",
+          "Text": "A text",
+          "TextUndefined": "",
+          "Title": "A title",
+          "Url": "https://example.com/",
+        },
+      ]
+    `);
   });
 });
 
 describe(buildPageParameters, () => {
   test("works", () => {
-    const schema: Database = {
+    const schema: UpdateDatabaseParameters = {
+      database_id: "xxx",
       properties: {
+        Title: { title: {} },
         Text: { rich_text: {} },
         Number: { number: {} },
         Select: { select: {} },
@@ -158,7 +164,7 @@ describe(buildPageParameters, () => {
         LastEditedTime: { last_edited_time: {} },
         LastEditedBy: { last_edited_by: {} },
         NotInData: { rich_text: {} },
-        Relation: { id: "hoge", name: "fuga", type: "relation", relation: { database_id: "ugu" } },
+        Relation: { type: "relation", relation: { database_id: "ugu" } },
       },
     };
 
@@ -166,7 +172,7 @@ describe(buildPageParameters, () => {
       $id: "deadbeefdeadbeefdeadbeefdeadbeef",
       $icon: "😀",
       $cover: "https://example.com/icon.png",
-      $title: "A title",
+      Title: "A title",
       Text: "A text",
       Number: 0,
       Select: "A select",
@@ -191,140 +197,118 @@ describe(buildPageParameters, () => {
     };
 
     expect(buildPageParameters({ data, schema })).toMatchInlineSnapshot(`
-Object {
-  "archived": false,
-  "cover": Object {
-    "external": Object {
-      "url": "https://example.com/icon.png",
-    },
-    "type": "external",
-  },
-  "icon": Object {
-    "emoji": "😀",
-    "type": "emoji",
-  },
-  "page_id": "deadbeefdeadbeefdeadbeefdeadbeef",
-  "properties": Object {
-    "Checkbox": Object {
-      "checkbox": true,
-      "type": "checkbox",
-    },
-    "CreatedBy": Object {
-      "created_by": Object {
-        "id": "okitan",
-        "object": "user",
-      },
-      "type": "created_by",
-    },
-    "CreatedTime": Object {
-      "created_time": "2021-09-04T15:35:00+09:00",
-      "type": "created_time",
-    },
-    "Date": Object {
-      "date": Object {
-        "end": undefined,
-        "start": "2021-09-04",
-      },
-      "type": "date",
-    },
-    "Email": Object {
-      "email": "no-reply@exmple.com",
-      "type": "email",
-    },
-    "Files": Object {
-      "files": Array [
-        Object {
+      Object {
+        "archived": false,
+        "cover": Object {
           "external": Object {
-            "url": "http://example.com/",
+            "url": "https://example.com/icon.png",
           },
-          "name": "http://example.com/",
           "type": "external",
         },
-        Object {
-          "external": Object {
+        "icon": Object {
+          "emoji": "😀",
+          "type": "emoji",
+        },
+        "page_id": "deadbeefdeadbeefdeadbeefdeadbeef",
+        "properties": Object {
+          "Checkbox": Object {
+            "checkbox": true,
+            "type": "checkbox",
+          },
+          "Date": Object {
+            "date": Object {
+              "end": undefined,
+              "start": "2021-09-04",
+            },
+            "type": "date",
+          },
+          "Email": Object {
+            "email": "no-reply@exmple.com",
+            "type": "email",
+          },
+          "Files": Object {
+            "files": Array [
+              Object {
+                "external": Object {
+                  "url": "http://example.com/",
+                },
+                "name": "http://example.com/",
+                "type": "external",
+              },
+              Object {
+                "external": Object {
+                  "url": "https://example.com/",
+                },
+                "name": "https://example.com/",
+                "type": "external",
+              },
+            ],
+            "type": "files",
+          },
+          "MultiSelect": Object {
+            "multi_select": Array [
+              Object {
+                "name": "SelectA",
+              },
+              Object {
+                "name": "SelectB",
+              },
+            ],
+            "type": "multi_select",
+          },
+          "Number": Object {
+            "number": 0,
+            "type": "number",
+          },
+          "PhoneNumber": Object {
+            "phone_number": "06-6012-3456",
+            "type": "phone_number",
+          },
+          "Relation": Object {
+            "relation": Array [
+              Object {
+                "id": "A",
+              },
+              Object {
+                "id": "B",
+              },
+            ],
+            "type": "relation",
+          },
+          "Select": Object {
+            "select": Object {
+              "name": "A select",
+            },
+            "type": "select",
+          },
+          "Text": Object {
+            "rich_text": Array [
+              Object {
+                "text": Object {
+                  "content": "A text",
+                },
+                "type": "text",
+              },
+            ],
+            "type": "rich_text",
+          },
+          "Title": Object {
+            "title": Array [
+              Object {
+                "text": Object {
+                  "content": "A title",
+                },
+                "type": "text",
+              },
+            ],
+            "type": "title",
+          },
+          "Url": Object {
+            "type": "url",
             "url": "https://example.com/",
           },
-          "name": "https://example.com/",
-          "type": "external",
         },
-      ],
-      "type": "files",
-    },
-    "LastEditedBy": Object {
-      "last_edited_by": Object {
-        "id": "okita",
-        "object": "user",
-      },
-      "type": "last_edited_by",
-    },
-    "LastEditedTime": Object {
-      "last_edited_time": "2021-09-05T15:35:00+09:00",
-      "type": "last_edited_time",
-    },
-    "MultiSelect": Object {
-      "multi_select": Array [
-        Object {
-          "name": "SelectA",
-        },
-        Object {
-          "name": "SelectB",
-        },
-      ],
-      "type": "multi_select",
-    },
-    "Number": Object {
-      "number": 0,
-      "type": "number",
-    },
-    "PhoneNumber": Object {
-      "phone_number": "06-6012-3456",
-      "type": "phone_number",
-    },
-    "Relation": Object {
-      "relation": Array [
-        Object {
-          "id": "A",
-        },
-        Object {
-          "id": "B",
-        },
-      ],
-      "type": "relation",
-    },
-    "Select": Object {
-      "select": Object {
-        "name": "A select",
-      },
-      "type": "select",
-    },
-    "Text": Object {
-      "rich_text": Array [
-        Object {
-          "text": Object {
-            "content": "A text",
-          },
-          "type": "text",
-        },
-      ],
-      "type": "rich_text",
-    },
-    "Url": Object {
-      "type": "url",
-      "url": "https://example.com/",
-    },
-    "title": Object {
-      "title": Array [
-        Object {
-          "text": Object {
-            "content": "A title",
-          },
-          "type": "text",
-        },
-      ],
-      "type": "title",
-    },
-  },
-}
-`);
+      }
+    `);
   });
 });
