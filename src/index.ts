@@ -144,14 +144,14 @@ export function buildPageParameters({
   data: Datum & { $databaseParent?: string; $pageParent?: string };
   schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
 }): CreatePageParameters | UpdatePageParameters {
-  if (!data.$id && !("id" in schema)) throw new Error("You should assign data.$id or shcema.id");
-
   const parameter: CreatePageParameters | UpdatePageParameters = data.$id
     ? ({ page_id: data.$id, archived: false } as UpdatePageParameters)
     : "id" in schema
     ? ({ parent: { database_id: schema.id } } as CreatePageParameters)
+    : "database_id" in schema
+    ? ({ parent: { database_id: schema.database_id } } as CreatePageParameters)
     : (() => {
-        throw new Error("You should assign data.$id or shcmea.id");
+        throw new Error("You should assign either data.$id, schema.id or schema.database_id");
       })();
 
   if ("$icon" in data && data.$icon) {
