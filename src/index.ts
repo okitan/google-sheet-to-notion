@@ -1,10 +1,10 @@
-import { PagesCreateParameters, PagesUpdateParameters } from "@notionhq/client/build/src/api-endpoints";
 import {
-  InputPropertyValue,
-  Property,
-  PropertySchema,
-  UpdatePropertySchema,
-} from "@notionhq/client/build/src/api-types";
+  CreateDatabaseParameters,
+  CreatePageParameters,
+  GetDatabaseResponse,
+  UpdateDatabaseParameters,
+  UpdatePageParameters,
+} from "@notionhq/client/build/src/api-endpoints";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -12,14 +12,6 @@ import { sheets_v4 } from "googleapis";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-export type Database = {
-  id?: string;
-  properties?: {
-    // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
-    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | null;
-  };
-};
 
 const metadata = ["$id", "$icon", "$cover"] as const;
 export type Datum = {
@@ -29,7 +21,7 @@ export type Datum = {
   $title: string;
   [x: string]: Value;
 };
-type Value = string | number | boolean | string[] | { start: string; end?: string } | undefined;
+type Value = string | number | boolean | string[] | { start: string; end?: string } | undefined | null;
 
 export function parseData({
   data,
@@ -37,22 +29,21 @@ export function parseData({
   validate = false,
 }: {
   data: sheets_v4.Schema$ValueRange;
-  schema: Database;
+  schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
   validate?: boolean;
 }): Datum[] {
   if (!data.values) return [];
 
-  const properties: {
-    // Property comes from Retrieve / PropertySchema from Create / UpdatePropertySchema from Update
-    [propertyName: string]: Property | PropertySchema | UpdatePropertySchema | null;
-    $title: { rich_text: {} };
-  } = schema.properties ? { ...schema.properties, $title: { rich_text: {} } } : { $title: { rich_text: {} } };
+  const properties = schema.properties || {};
 
   const header = data.values[0];
+
+  const titleIndex = header.findIndex((e) => e === "$title");
+  if (titleIndex < 0) throw new Error("you should at least specify $title");
+
   const keyMap: { [x: string]: number } = Object.fromEntries(
     [...metadata, ...Object.keys(properties)].map((key) => [key, header.findIndex((e) => e === key)])
   );
-  if (keyMap.title < 0) throw new Error("you should at least specify $title");
 
   return data.values.slice(1).map((array) => ({
     // metadata
@@ -65,9 +56,12 @@ export function parseData({
         .filter((e) => e.length)
     ),
     // properties including title
-    ...Object.fromEntries(
-      Object.entries(properties)
-        .map(([key, property]) => {
+    ...Object.fromEntries([
+      ["$title", parseValue(array[titleIndex], "rich_text")],
+      ...Object.keys(properties)
+        .map((key) => {
+          // Because properties is Record<string, ...>, Object.values is typed as any
+          const property = properties[key];
           if (property === null || property === undefined) return [];
 
           const type = "type" in property ? property.type : Object.keys(property)[0];
@@ -75,12 +69,13 @@ export function parseData({
           const index = keyMap[key];
           if (index < 0) return [];
 
-          const value = parseValue(array[index], type);
+          // properyt.type can be undefined when type is title
+          const value = parseValue(array[index], type || "rich_text");
 
           if (validate) {
             if (type === "select" && "select" in property) {
               if (value) {
-                const found = property.select.options?.find((e) => e.name === value);
+                const found = property.select.options?.find((e: any) => e.name === value);
 
                 if (!found) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
               }
@@ -88,7 +83,7 @@ export function parseData({
               if (property.multi_select.options) {
                 if (!Array.isArray(value)) throw new Error("something weired");
 
-                const found = property.multi_select.options.filter((e) => value.includes(e.name || ""));
+                const found = property.multi_select.options.filter((e: any) => value.includes(e.name || ""));
 
                 if (value.length !== found.length)
                   throw new Error(`Validation Error: ${value} is not allowed for ${key}`);
@@ -98,8 +93,8 @@ export function parseData({
 
           return [key, value];
         })
-        .filter((e) => e.length)
-    ),
+        .filter((e) => e.length),
+    ]),
   }));
 }
 
@@ -146,48 +141,71 @@ function parseValue(value: any, type: string): Value {
   }
 }
 
+const parameter: CreatePageParameters | UpdatePageParameters = { page_id: "xxx" };
+if (parameter.properties) parameter.properties["hoge"] = { type: "title", title: [] };
+
 export function buildPageParameters({
   data,
   schema,
 }: {
   data: Datum & { $databaseParent?: string; $pageParent?: string };
-  schema: Database;
-}): PagesCreateParameters | PagesUpdateParameters {
-  if (!data.$id && !schema.id) throw new Error("You should assign data.$id or shcema.id");
+  schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
+}): CreatePageParameters | UpdatePageParameters {
+  if (!data.$id && !("id" in schema)) throw new Error("You should assign data.$id or shcema.id");
 
   const title = {
-    type: "title",
-    title: [{ type: "text", text: { content: data.$title } }],
+    type: "title" as const,
+    title: [{ type: "text" as const, text: { content: data.$title } }],
   };
 
-  const parameter = data.$id
-    ? ({ page_id: data.$id, archived: false, properties: { title } } as PagesUpdateParameters)
-    : ({ parent: { database_id: schema.id }, properties: { title } } as PagesCreateParameters);
+  const parameter: CreatePageParameters | UpdatePageParameters = data.$id
+    ? ({ page_id: data.$id, archived: false } as UpdatePageParameters)
+    : "id" in schema
+    ? ({ parent: { database_id: schema.id } } as CreatePageParameters)
+    : (() => {
+        throw new Error("You should assign data.$id or shcmea.id");
+      })();
 
-  if ("$icon" in data && data.$icon) parameter.icon = { type: "emoji", emoji: data.$icon };
+  if ("$icon" in data && data.$icon) {
+    parameter.icon = {
+      type: "emoji",
+      // @ts-ignore validate emoji
+      emoji: data.$icon,
+    };
+  }
   if ("$cover" in data && data.$cover) parameter.cover = { type: "external", external: { url: data.$cover } };
 
-  const properties = schema.properties;
-  if (!properties) return parameter;
+  const properties = schema.properties || {};
 
-  Object.entries(data).forEach(([key, value]) => {
-    if (key.startsWith("$")) return;
-    const property = properties[key];
-    if (!property) return;
+  parameter.properties = Object.fromEntries([
+    ["title", title],
+    ...Object.entries(data)
+      .map(([key, value]) => {
+        if (key.startsWith("$")) return [];
+        const property = properties[key];
+        if (!property) return [];
 
-    const type = "type" in property ? property.type : Object.keys(property)[0];
+        const type = "type" in property ? property.type : Object.keys(property)[0];
 
-    const propertyValue = buildPropertyValue(value, type);
-    if (propertyValue !== undefined) parameter.properties[key] = propertyValue;
-  });
+        // when type is undefined is title
+        const propertyValue = buildPropertyValue(value, type);
+
+        return propertyValue ? [key, propertyValue] : [];
+      })
+      .filter((e) => e.length),
+  ]);
+
   return parameter;
 }
 
-function buildPropertyValue(value: Value, type: string): InputPropertyValue | undefined {
-  if (value === undefined) return undefined;
+function buildPropertyValue(value: Value, type?: string) {
+  if (typeof value === "undefined" || value === null) return undefined;
 
   // const property: InputPropertyValue = {};
   switch (type) {
+    case "title":
+      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
+      return { type, title: [{ type: "text", text: { content: value } }] };
     case "rich_text":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
       return { type, rich_text: [{ type: "text", text: { content: value } }] };
@@ -206,12 +224,6 @@ function buildPropertyValue(value: Value, type: string): InputPropertyValue | un
     case "phone_number":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
       return { type, phone_number: value };
-    case "created_by":
-      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
-      return { type, created_by: { object: "user", id: value } };
-    case "last_edited_by":
-      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
-      return { type, last_edited_by: { object: "user", id: value } };
     case "number":
       if (typeof value !== "number") throw new Error(`value should be number for ${type} but ${typeof value}`);
       return { type, number: value };
@@ -235,12 +247,6 @@ function buildPropertyValue(value: Value, type: string): InputPropertyValue | un
       if (!("start" in value)) throw new Error(`value shold be { start: string, end?: string} for ${type}`);
 
       return { type, date: { start: toISOString(value.start), end: value.end ? toISOString(value.end) : undefined } };
-    case "created_time":
-      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
-      return { type, created_time: toISOString(value) };
-    case "last_edited_time":
-      if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
-      return { type, last_edited_time: toISOString(value) };
     default:
       throw new Error(`unsupported type ${type}`);
   }

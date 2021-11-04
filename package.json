@@ -4,7 +4,8 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "rm -rf lib && tsc",
+    "build": "rm -rf lib && tsc --build tsconfig.build.json",
+    "build:check": "tsc --noEmit",
     "test": "jest"
   },
   "repository": {
@@ -19,7 +20,7 @@
   },
   "homepage": "https://github.com/okitan/google-sheet-to-notion#readme",
   "dependencies": {
-    "@notionhq/client": "^0.3.2",
+    "@notionhq/client": "^0.4.5",
     "dayjs": "^1.10.7",
     "googleapis": "^89.0.0"
   },
