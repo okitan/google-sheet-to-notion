@@ -98,12 +98,12 @@ function parseValue(value: any, type: string): Value {
   switch (type) {
     case "title":
     case "rich_text":
-    case "select":
     case "email":
     case "phone_number":
     case "created_by":
     case "last_edited_by":
       return value ?? "";
+    case "select":
     case "url": // '' is not valid for url
       return value ? value : undefined;
     case "number":
@@ -187,7 +187,7 @@ export function buildPageParameters({
 }
 
 function buildPropertyValue(value: Value, type: string) {
-  if (typeof value === "undefined" || value === null) return undefined;
+  if (typeof value === "undefined" || value === null) return;
 
   switch (type) {
     case "title":
@@ -198,11 +198,14 @@ function buildPropertyValue(value: Value, type: string) {
       return { type, rich_text: [{ type: "text", text: { content: value } }] };
     case "select":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
+      // do not select when blank
+      if (!value) return;
+
       return { type, select: { name: value } };
     case "url":
       if (typeof value !== "string") throw new Error(`value should be string for ${type} but ${typeof value}`);
       // '' is not OK for url
-      if (!value) return undefined;
+      if (!value) return;
 
       return { type, url: value };
     case "email":
