@@ -176,17 +176,17 @@ module.exports = {
   // timers: "real",
 
   // A map from regular expressions to paths to transformers
-  transform: {
-    "^.+\\.tsx?$": [
-      "esbuild-jest",
-      {
-        sourcemap: true,
-        loaders: {
-          ".spec.ts": "tsx",
-        },
-      },
-    ],
-  },
+  // transform: {
+  //   "^.+\\.tsx?$": [
+  //     "esbuild-jest",
+  //     {
+  //       sourcemap: true,
+  //       loaders: {
+  //         ".spec.ts": "tsx",
+  //       },
+  //     },
+  //   ],
+  // },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
