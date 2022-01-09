@@ -3,12 +3,12 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { sheets_v4 } from "googleapis";
 
-import type {
-  CreateDatabaseParameters,
-  CreatePageParameters,
-  GetDatabaseResponse,
-  UpdateDatabaseParameters,
-  UpdatePageParameters,
+import {
+  type CreateDatabaseParameters,
+  type CreatePageParameters,
+  type GetDatabaseResponse,
+  type UpdateDatabaseParameters,
+  type UpdatePageParameters,
 } from "@notionhq/client/build/src/api-endpoints";
 
 dayjs.extend(utc);
@@ -69,21 +69,20 @@ export function parseData({
           const value = parseValue(array[index], type);
 
           if (validate) {
-            if (type === "select" && "select" in property) {
+            if (type === "select" && "select" in property && property.select.options) {
               if (value) {
-                const found = property.select.options?.find((e) => e.name === value);
+                const index = property.select.options.findIndex((e) => e.name === value);
 
-                if (!found) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
+                if (index < 0) throw new Error(`Validation Error: ${value} is not allowed for ${key}`); // more friendly error message
               }
-            } else if (type === "multi_select" && "multi_select" in property) {
-              if (property.multi_select.options) {
-                if (!Array.isArray(value)) throw new Error("something weired");
+            } else if (type === "multi_select" && "multi_select" in property && property.multi_select.options) {
+              if (!Array.isArray(value)) throw new Error("something weired");
 
-                const found = property.multi_select.options.filter((e) => value.includes(e.name || ""));
+              const notFound = value.some(
+                (v) => (property.multi_select.options?.findIndex((e) => e.name === v) ?? -1) < 0
+              );
 
-                if (value.length !== found.length)
-                  throw new Error(`Validation Error: ${value} is not allowed for ${key}`);
-              }
+              if (notFound) throw new Error(`Validation Error: ${value} is not allowed for ${key}`);
             }
           }
 
