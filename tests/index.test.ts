@@ -1,8 +1,8 @@
 import { sheets_v4 } from "googleapis";
 
-import { buildPageParameters, Datum, parseData } from "../src";
+import { type CreateDatabaseParameters, type UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
 
-import type { CreateDatabaseParameters, UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
+import { buildPageParameters, type Datum, parseData } from "../src";
 
 describe(parseData, () => {
   test("works", () => {
@@ -144,6 +144,58 @@ describe(parseData, () => {
         },
       ]
     `);
+  });
+
+  test("with validation works", () => {
+    const schema: UpdateDatabaseParameters = {
+      database_id: "xxx",
+      properties: {
+        Select: { select: { options: [{ name: "hoge" }] } },
+        MultiSelect: { multi_select: { options: [{ name: "fuga" }, { name: "ugu" }] } },
+      },
+    };
+    const data: sheets_v4.Schema$ValueRange = {
+      values: [
+        // header
+        ["Select", "MultiSelect"],
+        // data
+        ["hoge", "fuga,ugu"],
+      ],
+    };
+
+    expect(parseData({ data, schema, validate: true })).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "MultiSelect": Array [
+            "fuga",
+            "ugu",
+          ],
+          "Select": "hoge",
+        },
+      ]
+    `);
+  });
+
+  test("with validation asserts multi select", () => {
+    const schema: UpdateDatabaseParameters = {
+      database_id: "xxx",
+      properties: {
+        Select: { select: { options: [{ name: "hoge" }] } },
+        MultiSelect: { multi_select: { options: [{ name: "fuga" }] } },
+      },
+    };
+    const data: sheets_v4.Schema$ValueRange = {
+      values: [
+        // header
+        ["Select", "MultiSelect"],
+        // data
+        ["hoge", "fuga,ugu"],
+      ],
+    };
+
+    expect(() => {
+      parseData({ data, schema, validate: true });
+    }).toThrowError("Validation Error: fuga,ugu is not allowed for MultiSelect");
   });
 });
 
