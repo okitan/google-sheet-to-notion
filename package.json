@@ -22,7 +22,7 @@
   "dependencies": {
     "@notionhq/client": "^0.4.12",
     "dayjs": "^1.10.7",
-    "googleapis": "^92.0.0"
+    "googleapis": "^99.0.0"
   },
   "devDependencies": {
     "@types/jest": "27.4.1",
