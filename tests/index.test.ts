@@ -95,7 +95,7 @@ describe(parseData, () => {
         CheckboxUndefined: { checkbox: {} },
         MultiSelectUndefined: { multi_select: {} },
         DateUndefined: { date: {} },
-        Relation: { type: "relation", relation: { database_id: "ugu" } },
+        Relation: { type: "relation", relation: { database_id: "ugu", single_property: {} } },
       },
     };
 
@@ -221,7 +221,7 @@ describe(buildPageParameters, () => {
         LastEditedTime: { last_edited_time: {} },
         LastEditedBy: { last_edited_by: {} },
         NotInData: { rich_text: {} },
-        Relation: { type: "relation", relation: { database_id: "ugu" } },
+        Relation: { type: "relation", relation: { database_id: "ugu", single_property: {} } },
       },
     };
 
