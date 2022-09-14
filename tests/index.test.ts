@@ -100,38 +100,38 @@ describe(parseData, () => {
     };
 
     expect(parseData({ data, schema })).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "$cover": "https://example.com/cover.png",
           "$id": "deadbeefdeadbeefdeadbeefdeadbeef",
           "Checkbox": true,
           "CheckboxUndefined": false,
           "CreatedBy": "okitan",
           "CreatedTime": "2021/09/04 15:35",
-          "Date": Object {
+          "Date": {
             "start": "2021/09/04",
           },
           "DateUndefined": undefined,
-          "DateWithEnd": Object {
+          "DateWithEnd": {
             "end": "2015/01/16",
             "start": "2015/01/10",
           },
           "Email": "no-reply@exmple.com",
-          "Files": Array [
+          "Files": [
             "http://example.com/",
             "https://example.com/",
           ],
           "LastEditedBy": "okita",
           "LastEditedTime": "2021/09/04 15:40",
-          "MultiSelect": Array [
+          "MultiSelect": [
             "SelectA",
             "SelectB",
           ],
-          "MultiSelectUndefined": Array [],
+          "MultiSelectUndefined": [],
           "Number": 0,
           "NumberUndefined": undefined,
           "PhoneNumber": "06-6012-3456",
-          "Relation": Array [
+          "Relation": [
             "A",
             "B",
           ],
@@ -164,9 +164,9 @@ describe(parseData, () => {
     };
 
     expect(parseData({ data, schema, validate: true })).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "MultiSelect": Array [
+      [
+        {
+          "MultiSelect": [
             "fuga",
             "ugu",
           ],
@@ -255,46 +255,46 @@ describe(buildPageParameters, () => {
     };
 
     expect(buildPageParameters({ data, schema })).toMatchInlineSnapshot(`
-      Object {
+      {
         "archived": false,
-        "cover": Object {
-          "external": Object {
+        "cover": {
+          "external": {
             "url": "https://example.com/icon.png",
           },
           "type": "external",
         },
-        "icon": Object {
+        "icon": {
           "emoji": "😀",
           "type": "emoji",
         },
         "page_id": "deadbeefdeadbeefdeadbeefdeadbeef",
-        "properties": Object {
-          "Checkbox": Object {
+        "properties": {
+          "Checkbox": {
             "checkbox": true,
             "type": "checkbox",
           },
-          "Date": Object {
-            "date": Object {
+          "Date": {
+            "date": {
               "end": undefined,
               "start": "2021-09-04",
             },
             "type": "date",
           },
-          "Email": Object {
+          "Email": {
             "email": "no-reply@exmple.com",
             "type": "email",
           },
-          "Files": Object {
-            "files": Array [
-              Object {
-                "external": Object {
+          "Files": {
+            "files": [
+              {
+                "external": {
                   "url": "http://example.com/",
                 },
                 "name": "http://example.com/",
                 "type": "external",
               },
-              Object {
-                "external": Object {
+              {
+                "external": {
                   "url": "https://example.com/",
                 },
                 "name": "https://example.com/",
@@ -303,46 +303,46 @@ describe(buildPageParameters, () => {
             ],
             "type": "files",
           },
-          "MultiSelect": Object {
-            "multi_select": Array [
-              Object {
+          "MultiSelect": {
+            "multi_select": [
+              {
                 "name": "SelectA",
               },
-              Object {
+              {
                 "name": "SelectB",
               },
             ],
             "type": "multi_select",
           },
-          "Number": Object {
+          "Number": {
             "number": 0,
             "type": "number",
           },
-          "PhoneNumber": Object {
+          "PhoneNumber": {
             "phone_number": "06-6012-3456",
             "type": "phone_number",
           },
-          "Relation": Object {
-            "relation": Array [
-              Object {
+          "Relation": {
+            "relation": [
+              {
                 "id": "A",
               },
-              Object {
+              {
                 "id": "B",
               },
             ],
             "type": "relation",
           },
-          "Select": Object {
-            "select": Object {
+          "Select": {
+            "select": {
               "name": "A select",
             },
             "type": "select",
           },
-          "Text": Object {
-            "rich_text": Array [
-              Object {
-                "text": Object {
+          "Text": {
+            "rich_text": [
+              {
+                "text": {
                   "content": "A text",
                 },
                 "type": "text",
@@ -350,10 +350,10 @@ describe(buildPageParameters, () => {
             ],
             "type": "rich_text",
           },
-          "Title": Object {
-            "title": Array [
-              Object {
-                "text": Object {
+          "Title": {
+            "title": [
+              {
+                "text": {
                   "content": "A title",
                 },
                 "type": "text",
@@ -361,7 +361,7 @@ describe(buildPageParameters, () => {
             ],
             "type": "title",
           },
-          "Url": Object {
+          "Url": {
             "type": "url",
             "url": "https://example.com/",
           },
