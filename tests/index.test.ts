@@ -1,6 +1,6 @@
-import { sheets_v4 } from "googleapis";
+import type { sheets_v4 } from "@googleapis/sheets";
 
-import { type CreateDatabaseParameters, type UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
+import type { CreateDatabaseParameters, UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
 
 import { buildPageParameters, type Datum, parseData } from "../src";
 
