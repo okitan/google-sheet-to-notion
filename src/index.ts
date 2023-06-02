@@ -1,14 +1,14 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { sheets_v4 } from "googleapis";
+import type { sheets_v4 } from "@googleapis/sheets";
 
-import {
-  type CreateDatabaseParameters,
-  type CreatePageParameters,
-  type GetDatabaseResponse,
-  type UpdateDatabaseParameters,
-  type UpdatePageParameters,
+import type {
+  CreateDatabaseParameters,
+  CreatePageParameters,
+  GetDatabaseResponse,
+  UpdateDatabaseParameters,
+  UpdatePageParameters,
 } from "@notionhq/client/build/src/api-endpoints";
 
 dayjs.extend(utc);
