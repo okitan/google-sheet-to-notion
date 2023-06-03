@@ -21,8 +21,7 @@
   "homepage": "https://github.com/okitan/google-sheet-to-notion#readme",
   "dependencies": {
     "@googleapis/sheets": "^4.0.2",
-    "@notionhq/client": "^2.1.1",
-    "dayjs": "^1.10.7"
+    "@notionhq/client": "^2.1.1"
   },
   "devDependencies": {
     "@types/jest": "29.5.1",

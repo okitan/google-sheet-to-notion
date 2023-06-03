@@ -1,6 +1,3 @@
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import type { sheets_v4 } from "@googleapis/sheets";
 
 import type {
@@ -10,9 +7,6 @@ import type {
   UpdateDatabaseParameters,
   UpdatePageParameters,
 } from "@notionhq/client/build/src/api-endpoints";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 const metadata = ["$id", "$icon", "$cover"] as const;
 export type Datum = {
@@ -247,9 +241,23 @@ function buildPropertyValue(value: Value, type: string) {
 }
 
 function toISOString(str: string) {
+  // parse and format is on the same timezone
+  const date = new Date(Date.parse(str));
+
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+
   if (str.includes(":")) {
-    return dayjs(str).tz(dayjs.tz.guess()).format("YYYY-MM-DDTHH:mm:ssZ");
+    const hour = padZero(date.getHours());
+    const minute = padZero(date.getMinutes());
+    const second = padZero(date.getSeconds());
+
+    return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
   } else {
-    return dayjs(str).tz(dayjs.tz.guess()).format("YYYY-MM-DD");
+    return `${year}-${month}-${day}`;
   }
+}
+function padZero(num: number) {
+  return (num < 10 ? "0" : "") + num;
 }
