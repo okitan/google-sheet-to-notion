@@ -28,15 +28,27 @@ export function parseData({
 }): Datum[] {
   if (!data.values) return [];
 
-  const properties = schema.properties || {};
+  return parseValues({ header: data.values[0], values: data.values.slice(1), schema, validate });
+}
 
-  const header = data.values[0];
+export function parseValues({
+  schema,
+  header,
+  values,
+  validate = false,
+}: {
+  header: any[];
+  values: any[][];
+  schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
+  validate?: boolean;
+}): Datum[] {
+  const properties = schema.properties || {};
 
   const keyMap: { [x: string]: number } = Object.fromEntries(
     [...metadata, ...Object.keys(properties)].map((key) => [key, header.findIndex((e) => e === key)])
   );
 
-  return data.values.slice(1).map((array) => ({
+  return values.map((array) => ({
     // metadata
     ...Object.fromEntries(
       metadata
