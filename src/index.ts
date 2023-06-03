@@ -114,7 +114,7 @@ function parseValue(value: any, type: string): Value {
     case "number":
       return value !== undefined ? parseFloat(value) : undefined;
     case "checkbox":
-      return !!value;
+      return value === "TRUE";
     case "multi_select":
     case "files":
     case "relation":
