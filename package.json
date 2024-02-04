@@ -24,7 +24,7 @@
     "@notionhq/client": "^2.1.1"
   },
   "devDependencies": {
-    "@types/jest": "29.5.11",
+    "@types/jest": "29.5.12",
     "prettier": "3.2.4",
     "ts-jest": "29.1.2",
     "typescript": "5.3.3"
