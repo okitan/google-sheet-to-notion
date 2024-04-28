@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/okitan/google-sheet-to-notion#readme",
   "dependencies": {
-    "@googleapis/sheets": "^5.0.0",
+    "@googleapis/sheets": "^6.0.0",
     "@notionhq/client": "^2.1.1"
   },
   "devDependencies": {
