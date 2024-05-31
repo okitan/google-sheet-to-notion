@@ -8,6 +8,8 @@ import type {
   UpdatePageParameters,
 } from "@notionhq/client/build/src/api-endpoints";
 
+type UpdatePageBodyParameters = Omit<UpdatePageParameters, "page_id">;
+
 const metadata = ["$id", "$icon", "$cover"] as const;
 export type Datum = {
   $id?: string;
@@ -149,13 +151,13 @@ export function buildPageParameters({
 }: {
   data: Datum;
   schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
-}): CreatePageParameters | UpdatePageParameters {
-  const parameter: CreatePageParameters | UpdatePageParameters = data.$id
-    ? ({ page_id: data.$id, archived: false } as UpdatePageParameters)
+}): CreatePageParameters | UpdatePageBodyParameters {
+  const parameter: CreatePageParameters |UpdatePageBodyParameters = data.$id
+    ? ({ archived: false } satisfies UpdatePageBodyParameters)
     : "id" in schema
-    ? ({ parent: { database_id: schema.id } } as CreatePageParameters)
+    ? ({ parent: { database_id: schema.id }, properties: {} } satisfies CreatePageParameters)
     : "database_id" in schema
-    ? ({ parent: { database_id: schema.database_id } } as CreatePageParameters)
+    ? ({ parent: { database_id: schema.database_id }, properties: {} } satisfies CreatePageParameters)
     : (() => {
         throw new Error("You should assign either data.$id, schema.id or schema.database_id");
       })();
