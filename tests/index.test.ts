@@ -271,7 +271,6 @@ describe(buildPageParameters, () => {
           "emoji": "😀",
           "type": "emoji",
         },
-        "page_id": "deadbeefdeadbeefdeadbeefdeadbeef",
         "properties": {
           "Checkbox": {
             "checkbox": true,
