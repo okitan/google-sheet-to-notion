@@ -1,6 +1,6 @@
 import type { sheets_v4 } from "@googleapis/sheets";
 
-import type { CreateDatabaseParameters, UpdateDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
+import type { CreateDataSourceParameters, UpdateDataSourceParameters } from "@notionhq/client";
 
 import { buildPageParameters, type Datum, parseData } from "../src";
 
@@ -71,8 +71,8 @@ describe(parseData, () => {
       ],
     };
 
-    const schema: CreateDatabaseParameters = {
-      parent: { page_id: "xxx" },
+    const schema: CreateDataSourceParameters = {
+      parent: { database_id: "xxx" },
       properties: {
         Title: { title: {} },
         Text: { rich_text: {} },
@@ -98,7 +98,7 @@ describe(parseData, () => {
         CheckboxUndefined: { checkbox: {} },
         MultiSelectUndefined: { multi_select: {} },
         DateUndefined: { date: {} },
-        Relation: { type: "relation", relation: { database_id: "ugu", single_property: {} } },
+        Relation: { type: "relation", relation: { data_source_id: "ugu", single_property: {} } },
       },
     };
 
@@ -151,8 +151,8 @@ describe(parseData, () => {
   });
 
   test("with validation works", () => {
-    const schema: UpdateDatabaseParameters = {
-      database_id: "xxx",
+    const schema: UpdateDataSourceParameters = {
+      data_source_id: "xxx",
       properties: {
         Select: { select: { options: [{ name: "hoge" }] } },
         MultiSelect: { multi_select: { options: [{ name: "fuga" }, { name: "ugu" }] } },
@@ -181,8 +181,8 @@ describe(parseData, () => {
   });
 
   test("with validation asserts multi select", () => {
-    const schema: UpdateDatabaseParameters = {
-      database_id: "xxx",
+    const schema: UpdateDataSourceParameters = {
+      data_source_id: "xxx",
       properties: {
         Select: { select: { options: [{ name: "hoge" }] } },
         MultiSelect: { multi_select: { options: [{ name: "fuga" }] } },
@@ -205,8 +205,8 @@ describe(parseData, () => {
 
 describe(buildPageParameters, () => {
   test("works", () => {
-    const schema: UpdateDatabaseParameters = {
-      database_id: "xxx",
+    const schema: UpdateDataSourceParameters = {
+      data_source_id: "xxx",
       properties: {
         Title: { title: {} },
         Text: { rich_text: {} },
@@ -225,7 +225,7 @@ describe(buildPageParameters, () => {
         LastEditedTime: { last_edited_time: {} },
         LastEditedBy: { last_edited_by: {} },
         NotInData: { rich_text: {} },
-        Relation: { type: "relation", relation: { database_id: "ugu", single_property: {} } },
+        Relation: { type: "relation", relation: { data_source_id: "ugu", single_property: {} } },
       },
     };
 
