@@ -4,20 +4,25 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: lts/*
+          node-version: "24"
           registry-url: https://registry.npmjs.org/
+          package-manager-cache: false
       - run: npm ci
       - run: npm run build
       - run: npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   publish-gpr:
     runs-on: ubuntu-latest
