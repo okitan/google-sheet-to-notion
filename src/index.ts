@@ -1,14 +1,15 @@
 import type { sheets_v4 } from "@googleapis/sheets";
 
 import type {
-  CreateDatabaseParameters,
+  CreateDataSourceParameters,
   CreatePageParameters,
-  GetDatabaseResponse,
-  UpdateDatabaseParameters,
+  GetDataSourceResponse,
+  UpdateDataSourceParameters,
   UpdatePageParameters,
-} from "@notionhq/client/build/src/api-endpoints";
+} from "@notionhq/client";
 
 type UpdatePageBodyParameters = Omit<UpdatePageParameters, "page_id">;
+type Schema = CreateDataSourceParameters | UpdateDataSourceParameters | GetDataSourceResponse;
 
 const metadata = ["$id", "$icon", "$cover"] as const;
 export type Datum = {
@@ -25,7 +26,7 @@ export function parseData({
   validate = false,
 }: {
   data: sheets_v4.Schema$ValueRange;
-  schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
+  schema: Schema;
   validate?: boolean;
 }): Datum[] {
   if (!data.values) return [];
@@ -41,7 +42,7 @@ export function parseValues({
 }: {
   header: any[];
   values: any[][];
-  schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
+  schema: Schema;
   validate?: boolean;
 }): Datum[] {
   const properties = schema.properties || {};
@@ -150,16 +151,16 @@ export function buildPageParameters({
   schema,
 }: {
   data: Datum;
-  schema: CreateDatabaseParameters | UpdateDatabaseParameters | GetDatabaseResponse;
+  schema: Schema;
 }): CreatePageParameters | UpdatePageBodyParameters {
   const parameter: CreatePageParameters |UpdatePageBodyParameters = data.$id
     ? ({ archived: false } satisfies UpdatePageBodyParameters)
     : "id" in schema
-    ? ({ parent: { database_id: schema.id }, properties: {} } satisfies CreatePageParameters)
-    : "database_id" in schema
-    ? ({ parent: { database_id: schema.database_id }, properties: {} } satisfies CreatePageParameters)
+    ? ({ parent: { data_source_id: schema.id }, properties: {} } satisfies CreatePageParameters)
+    : "data_source_id" in schema
+    ? ({ parent: { data_source_id: schema.data_source_id }, properties: {} } satisfies CreatePageParameters)
     : (() => {
-        throw new Error("You should assign either data.$id, schema.id or schema.database_id");
+        throw new Error("You should assign either data.$id, schema.id or schema.data_source_id");
       })();
 
   if ("$icon" in data && data.$icon) {

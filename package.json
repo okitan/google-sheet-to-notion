@@ -20,13 +20,15 @@
     "url": "https://github.com/okitan/google-sheet-to-notion/issues"
   },
   "homepage": "https://github.com/okitan/google-sheet-to-notion#readme",
-  "dependencies": {
-    "@googleapis/sheets": "^13.0.0",
-    "@notionhq/client": "^4.0.0"
+  "peerDependencies": {
+    "@googleapis/sheets": ">=13.0.0",
+    "@notionhq/client": ">=5.0.0"
   },
   "devDependencies": {
+    "@googleapis/sheets": "14.0.0",
+    "@notionhq/client": "5.25.2",
     "prettier": "3.9.6",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.10"
   },
   "engines": {
