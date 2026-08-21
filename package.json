@@ -29,7 +29,7 @@
     "@notionhq/client": "5.25.2",
     "prettier": "3.9.6",
     "typescript": "7.0.2",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "engines": {
     "node": ">=20.0.0"
