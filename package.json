@@ -25,7 +25,7 @@
     "@notionhq/client": ">=5.0.0"
   },
   "devDependencies": {
-    "@googleapis/sheets": "14.0.0",
+    "@googleapis/sheets": "17.0.0",
     "@notionhq/client": "5.26.0",
     "prettier": "3.9.6",
     "typescript": "7.0.2",
